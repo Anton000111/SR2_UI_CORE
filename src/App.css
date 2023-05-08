@@ -1,0 +1,135 @@
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
+.App > header {
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5em;
+}
+
+.App > header > h2 {
+  padding: 0;
+  margin: 0;
+}
+
+.App > main {
+  display: flex;
+  height: 90vh;
+}
+
+.App > main > nav {
+  height: 100%;
+  min-width: 300px;
+  width: 40vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.App > main > nav > ul {
+  height: calc(100% - 200px);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.App > main > nav > ul > li {
+  padding: 0.1em 0.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  transition: 0.1s;
+  line-height: 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.App > main > nav > ul > li > span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+}
+
+.App button {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+  padding: 0.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.App > main > nav > ul > li:hover, .App button:hover {
+  background-color: black;
+  color: white;
+}
+
+.App .Description {
+  max-height: 100%;
+  width: 100%;
+  padding: 0 1em;
+}
+
+.App .Description > h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.App .Description > .Command {
+  margin-top: 1em;
+  display: flex;
+  margin-bottom: 2em;
+}
+
+.App .Description > .Command > h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 0.8em;
+  margin-right: 1em;
+}
+
+.App .Description > .Command > span {
+  padding: 0.5em;
+  border-radius: 0.2em;
+  background-color: rgb(224, 222, 203);
+  font-size: 0.5em;
+  font-family: monospace;
+}
+
+.App .Description button {
+  border: solid;
+  border-width: 1px;
+  font-size: 0.8em;
+  margin-bottom: 0.5em;
+}
+
+.App .Description > .Console {
+  width: 100%;
+  height: 50%;
+  overflow-y: auto;
+  background-color: rgb(236, 236, 236);
+  padding: 0;
+}
+
+.App .Description > .Console > li {
+  font-family: monospace;
+  font-size: 0.5em;
+  list-style-type: none;
+}
