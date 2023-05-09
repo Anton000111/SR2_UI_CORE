@@ -1,21 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 import { getIsCommand, getCommand } from './utils';
 
 
 
 function App() {
+  const [name, setName] = useState<string>();
   const [currentLayer, setCurrentLayer] = useState<{ [key: string]: any }>({});
   const [address, setAddress] = useState<string[]>([]);
 
   const [openedCommand, setOpenedCommand] = useState<{ [key: string]: any } | null>(null);
+  const [description, setDescription] = useState<string>();
 
   const [consoleData, setConsoleData] = useState<string[]>([]);
 
   const getStatus = useCallback(async (isFirst?: boolean) => {
-    const { data: { currentLayer, address } } = await axios.get(`http://localhost:5001/status${isFirst ? '?isFirst=true' : ''}`);
-    setCurrentLayer(currentLayer);
+    const { data: { currentLayer, address, structure } } = await axios.get(`http://localhost:5001/status${isFirst ? '?isFirst=true' : ''}`);
+    setName(structure.__name);
+
+    const filteredLayer = Object.keys(currentLayer)
+      .filter(key => !key.startsWith('__'))
+      .reduce<{ [key: string]: any }>((acc, key) => {
+      acc[key] = currentLayer[key];
+
+      return acc;
+    }, {});
+
+    setCurrentLayer(filteredLayer);
     setAddress(address);
     getStatus();
   }, []);
@@ -66,7 +79,13 @@ function App() {
     const target = currentLayer[key];
 
     if (getIsCommand(target)) {
-      return setOpenedCommand({ [key]: target });
+      if (typeof target === 'string' || Array.isArray(target)) {
+        setDescription(undefined);
+        return setOpenedCommand({ [key]: getCommand(target) });
+      }
+
+      setDescription(target.description);
+      return setOpenedCommand({ [key]: getCommand(target.value) });
     }
 
     goInside(key);
@@ -82,9 +101,11 @@ function App() {
 
   const renderSections = [sections[sections.length - 2], sections[sections.length - 1]].filter(Boolean);
 
-  const sectionsJSX = !!renderSections.length && (
-    <h2>{`${sections.length > 2 ? '... / ' : ''}${renderSections.join(' / ')}`}</h2>
-  );
+  const sectionsJSX = useMemo(() => {
+    if (!renderSections.length) return <h2>{name}</h2>
+
+    return <h2>{`${sections.length > 2 ? '... / ' : ''}${renderSections.join(' / ')}`}</h2>;
+  }, [name, renderSections, sections.length]);
 
   const listJSX = currentLayerKeys.map(key => {
     const target = currentLayer[key];
@@ -120,10 +141,16 @@ function App() {
         {openedCommand && <div className='Description'>
           <h3>{Object.keys(openedCommand)[0]}</h3>
           <div className='Command'><h4>Command:</h4> <span>{getCommand(Object.values(openedCommand)[0])}</span></div>
-          <button onClick={execute}>Execute</button>
+          {!!description && <div className='CommandDescription'>
+            <ReactMarkdown>{description}</ReactMarkdown>
+          </div>}
+          <div className='ConsoleHeader'>
+            <button onClick={execute}>Run ▶</button>
+            <span>If nothing is happening check your native console. There is may be you need to accept anything.</span>
+          </div>
           <ul className='Console'>
-            {consoleData.map(line => (
-              <li key={line}>{line}</li>
+            {consoleData.map((line, index) => (
+              <li key={line + index}>{line}</li>
             ))}
           </ul>
         </div>}

@@ -84,7 +84,9 @@
 .App .Description {
   max-height: 100%;
   width: 100%;
-  padding: 0 1em;
+  padding: 0 1em 1em 1em;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .App .Description > h3 {
@@ -95,7 +97,7 @@
 .App .Description > .Command {
   margin-top: 1em;
   display: flex;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 }
 
 .App .Description > .Command > h4 {
@@ -114,10 +116,10 @@
 }
 
 .App .Description button {
-  border: solid;
-  border-width: 1px;
   font-size: 0.8em;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.2em;
+  margin-right: 0.5em;
+  flex-shrink: 0;
 }
 
 .App .Description > .Console {
@@ -126,10 +128,27 @@
   overflow-y: auto;
   background-color: rgb(236, 236, 236);
   padding: 0;
+  margin: 0;
 }
 
 .App .Description > .Console > li {
   font-family: monospace;
   font-size: 0.5em;
   list-style-type: none;
+}
+
+.App .ConsoleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.App .ConsoleHeader > span {
+  font-size: 0.4em;
+  font-family: monospace;
+}
+
+.App .Description > .CommandDescription {
+  margin-bottom: 1em;
+  font-size: 0.7em;
 }
