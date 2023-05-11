@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { getIsCommand, getCommand } from './utils';
-
-
 
 function App() {
   const [name, setName] = useState<string>();
@@ -16,8 +14,10 @@ function App() {
 
   const [consoleData, setConsoleData] = useState<string[]>([]);
 
+  const SERVER_URL = useRef<string>();
+
   const getStatus = useCallback(async (isFirst?: boolean) => {
-    const { data: { currentLayer, address, structure } } = await axios.get(`http://localhost:5001/status${isFirst ? '?isFirst=true' : ''}`);
+    const { data: { currentLayer, address, structure } } = await axios.get(`${SERVER_URL.current}/status${isFirst ? '?isFirst=true' : ''}`);
     setName(structure.__name);
 
     const filteredLayer = Object.keys(currentLayer)
@@ -34,24 +34,30 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getStatus(true);
+    (async () => {
+      const { data: config } = await axios.get('/config.json');
+
+      SERVER_URL.current = `http://localhost:${config.SERVER_PORT}`;
+
+      getStatus(true);
+    })();
   }, [getStatus]);
 
   const goInside = useCallback((key: string) => {
-    axios.post('http://localhost:5001/goInside', { key });
+    axios.post(`${SERVER_URL.current}/goInside`, { key });
 
     setOpenedCommand(null);
   }, []);
 
   const goBack = useCallback(() => {
-    axios.post('http://localhost:5001/goBack', {});
+    axios.post(`${SERVER_URL.current}/goBack`, {});
 
     setConsoleData([]);
     setOpenedCommand(null);
   }, []);
 
   const execute = useCallback(async () => {
-    const { body: readableStream } = await fetch('http://localhost:5001/execute', {
+    const { body: readableStream } = await fetch(`${SERVER_URL.current}/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key: Object.keys(openedCommand!)[0] }),
